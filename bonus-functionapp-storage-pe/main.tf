@@ -142,10 +142,13 @@ resource "azurerm_linux_function_app" "function" {
   resource_group_name = azurerm_resource_group.main.name
   service_plan_id     = azurerm_service_plan.asp.id
 
-  storage_account_name       = azurerm_storage_account.storage.name
-  storage_account_access_key = azurerm_storage_account.storage.primary_access_key
+  storage_account_name = azurerm_storage_account.storage.name
 
   virtual_network_subnet_id = azurerm_subnet.func_subnet.id
+
+  identity {
+    type = "SystemAssigned"
+  }
 
   site_config {
     always_on              = false
@@ -157,12 +160,10 @@ resource "azurerm_linux_function_app" "function" {
   }
 
   app_settings = {
-    "WEBSITE_VNET_ROUTE_ALL"   = "1"
-    "WEBSITE_CONTENTOVERVNET"  = "1"
-    "FUNCTIONS_WORKER_RUNTIME" = "python"
-    # Additional required settings for secure storage
-    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING" = azurerm_storage_account.storage.primary_connection_string
-    "WEBSITE_CONTENTSHARE"                     = "func-content-share"
+    "WEBSITE_VNET_ROUTE_ALL"           = "1"
+    "WEBSITE_CONTENTOVERVNET"          = "1"
+    "FUNCTIONS_WORKER_RUNTIME"         = "python"
+    "AzureWebJobsStorage__accountName" = azurerm_storage_account.storage.name
   }
 
   depends_on = [
