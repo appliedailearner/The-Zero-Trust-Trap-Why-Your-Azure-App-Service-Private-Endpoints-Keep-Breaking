@@ -164,6 +164,9 @@ resource "azurerm_linux_function_app" "function" {
     "WEBSITE_CONTENTOVERVNET"          = "1"
     "FUNCTIONS_WORKER_RUNTIME"         = "python"
     "AzureWebJobsStorage__accountName" = azurerm_storage_account.storage.name
+    # WARNING: Linux Elastic Premium mandates connection strings for the content share
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING" = azurerm_storage_account.storage.primary_connection_string
+    "WEBSITE_CONTENTSHARE"                     = "func-content-share"
   }
 
   depends_on = [
